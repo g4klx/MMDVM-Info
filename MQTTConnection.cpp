@@ -58,12 +58,12 @@ bool CMQTTConnection::open()
 {
 	char name[50U];
 #if defined(_WIN32) || defined(_WIN64)
-	::sprintf(name, "CrossMode.%u", (unsigned)::_getpid());
+	::sprintf(name, "Info.%u", (unsigned)::_getpid());
 #else
-	::sprintf(name, "CrossMode.%u", (unsigned)::getpid());
+	::sprintf(name, "Info.%u", (unsigned)::getpid());
 #endif
 
-	::fprintf(stdout, "MMDVM-CrossMode (%s) connecting to MQTT as %s\n", m_name.c_str(), name);
+	::fprintf(stdout, "MMDVM-Info (%s) connecting to MQTT as %s\n", m_name.c_str(), name);
 
 	m_mosq = ::mosquitto_new(name, true, this);
 	if (m_mosq == nullptr) {

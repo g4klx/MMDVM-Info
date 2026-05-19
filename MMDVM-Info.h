@@ -21,6 +21,7 @@
 
 #include "Conf.h"
 
+#include <vector>
 #include <string>
 #include <map>
 
@@ -34,6 +35,7 @@ public:
 private:
 	CConf m_conf;
 
+	std::vector<std::string> m_exclusions;
 	std::vector<std::pair<std::string, std::string>> m_configs;
 
 	bool readConfig(const std::string& name, const std::string& path);

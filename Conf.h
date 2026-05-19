@@ -49,7 +49,10 @@ public:
 	std::string  getMQTTUsername() const;
 	std::string  getMQTTPassword() const;
 
-	// The Config section
+	// The Exclude section
+	std::vector<std::string> getExclusions() const;
+
+	// The Configs section
 	std::vector<std::pair<std::string, std::string>> getConfigs() const;
 
 private:
@@ -67,6 +70,8 @@ private:
 	bool         m_mqttAuthEnabled;
 	std::string  m_mqttUsername;
 	std::string  m_mqttPassword;
+
+	std::vector<std::string> m_exclusions;
 
 	std::vector<std::pair<std::string, std::string>> m_configs;
 };

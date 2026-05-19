@@ -33,6 +33,7 @@ enum class SECTION {
 	GENERAL,
 	LOG,
 	MQTT,
+	EXCLUDE,
 	CONFIGS
 };
 
@@ -48,6 +49,7 @@ m_mqttName("info"),
 m_mqttAuthEnabled(false),
 m_mqttUsername(),
 m_mqttPassword(),
+m_exclusions(),
 m_configs()
 {
 }
@@ -78,6 +80,8 @@ bool CConf::read()
 				section = SECTION::LOG;
 			else if (::strncmp(buffer, "[MQTT]", 6U) == 0)
 				section = SECTION::MQTT;
+			else if (::strncmp(buffer, "[Exclude]", 9U) == 0)
+				section = SECTION::EXCLUDE;
 			else if (::strncmp(buffer, "[Configs]", 9U) == 0)
 				section = SECTION::CONFIGS;
 			else
@@ -124,6 +128,9 @@ bool CConf::read()
 				m_mqttUsername = value;
 			else if (::strcmp(key, "Password") == 0)
 				m_mqttPassword = value;
+		} else if (section == SECTION::EXCLUDE) {
+			if (::strcmp(key, "Key") == 0)
+				m_exclusions.push_back(value);
 		} else if (section == SECTION::CONFIGS) {
 			std::pair<std::string, std::string> data = std::make_pair(key, value);
 			m_configs.push_back(data);
@@ -184,6 +191,11 @@ std::string CConf::getMQTTUsername() const
 std::string CConf::getMQTTPassword() const
 {
 	return m_mqttPassword;
+}
+
+std::vector<std::string> CConf::getExclusions() const
+{
+	return m_exclusions;
 }
 
 std::vector<std::pair<std::string, std::string>> CConf::getConfigs() const
