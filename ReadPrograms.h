@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2024,2026 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2026 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,31 +16,20 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#if !defined(MMDVM_Info_H)
-#define	MMDVM_Info_H
-
-#include "Conf.h"
+#if !defined(ReadPrograms_H)
+#define	ReadPrograms_H
 
 #include <vector>
 #include <string>
 
-class CMMDVMInfo {
+class CReadPrograms {
 public:
-	CMMDVMInfo(const std::string& fileName);
-	~CMMDVMInfo();
+	CReadPrograms();
+	~CReadPrograms();
 
-	int run();
+	bool read(const std::vector<std::string>& programs) const;
 
 private:
-	CConf m_conf;
-
-	std::vector<std::string>                         m_exclusions;
-	std::vector<std::pair<std::string, std::string>> m_configs;
-	std::vector<std::string>                         m_programs;
-
-	void remoteControl(const std::string& commandString);
-
-	static void onCommand(const unsigned char* command, unsigned int length);
 };
 
 #endif

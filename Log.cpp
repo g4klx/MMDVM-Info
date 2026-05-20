@@ -104,3 +104,14 @@ void WriteJSON(const std::string& topLevel, nlohmann::json& json)
 		m_mqtt->publish("json", top.dump());
 	}
 }
+
+void writeJSONMessage(const std::string& message)
+{
+	if (m_mqtt != nullptr) {
+		nlohmann::json top;
+
+		top["Message"] = message;
+
+		m_mqtt->publish("json", top.dump());
+	}
+}

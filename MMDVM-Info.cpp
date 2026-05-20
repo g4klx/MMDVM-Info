@@ -19,6 +19,9 @@
 #include "MMDVM-Info.h"
 
 #include "MQTTConnection.h"
+#include "ReadAddresses.h"
+#include "ReadPrograms.h"
+#include "ReadConfig.h"
 #include "Version.h"
 #include "Thread.h"
 #include "Log.h"
@@ -44,8 +47,6 @@ const char* DEFAULT_INI_FILE = "/etc/MMDVM-Info.ini";
 static bool m_killed = false;
 static int  m_signal = 0;
 static bool m_reload = false;
-
-const int BUFFER_SIZE = 500;
 
 // In Log.cpp
 extern CMQTTConnection* m_mqtt;
@@ -126,7 +127,8 @@ int main(int argc, char** argv)
 CMMDVMInfo::CMMDVMInfo(const std::string& fileName) :
 m_conf(fileName),
 m_exclusions(),
-m_configs()
+m_configs(),
+m_programs()
 {
 	assert(!fileName.empty());
 }
@@ -217,6 +219,7 @@ int CMMDVMInfo::run()
 
 	m_configs    = m_conf.getConfigs();
 	m_exclusions = m_conf.getExclusions();
+	m_programs   = m_conf.getPrograms();
 
 	LogMessage("MMDVM-Info-%s is starting", VERSION);
 	LogMessage("Built %s %s (GitID #%.7s)", __TIME__, __DATE__, gitversion);
@@ -227,89 +230,10 @@ int CMMDVMInfo::run()
 		CThread::sleep(100U);
 	}
 
-	LogInfo("MMDVM-Info is stopping");
+	LogMessage("MMDVM-Info is stopping");
 	writeJSONMessage("MMDVM-Info is stopping");
 
 	return 0;
-}
-
-bool CMMDVMInfo::readConfig(const std::string& name, const std::string& path)
-{
-	nlohmann::json json;
-	nlohmann::json sectionJSON;
-
-	std::string section;
-
-	FILE* fp = ::fopen(path.c_str(), "rt");
-	if (fp != nullptr) {
-		char buffer[BUFFER_SIZE];
-		while (::fgets(buffer, BUFFER_SIZE, fp) != nullptr) {
-			if (buffer[0U] == '#')
-				continue;
-
-			if (buffer[0U] == '[') {
-				if (!sectionJSON.empty()) {
-					json[section] = sectionJSON;
-					sectionJSON.clear();
-				}
-
-				section.clear();
-
-				size_t len = ::strlen(buffer);
-				if (len > 1U && buffer[len - 2U] == ']') {
-					buffer[len - 2U] = '\0';
-					section = std::string(buffer + 1U);
-				}
-
-				continue;
-			}
-
-			char* key = ::strtok(buffer, " \t=\r\n");
-			if (key == nullptr)
-				continue;
-
-			char* value = ::strtok(nullptr, "\r\n");
-			if (value == nullptr)
-				continue;
-
-			// Remove quotes from the value
-			size_t len = ::strlen(value);
-			if (len > 1U && *value == '"' && value[len - 1U] == '"') {
-				value[len - 1U] = '\0';
-				value++;
-			}
-
-			if (!section.empty()) {
-				// Filter out excluded keys
-				if (std::find(m_exclusions.cbegin(), m_exclusions.cend(), key) == m_exclusions.cend())
-					sectionJSON[key] = value;
-			}
-		}
-
-		if (!sectionJSON.empty())
-			json[section] = sectionJSON;
-
-		::fclose(fp);
-	}
-
-	if (!json.empty()) {
-		WriteJSON(name, json);
-
-		return true;
-	} else {
-		writeJSONMessage("Invalid config name");
-
-		return false;
-	}
-}
-
-void CMMDVMInfo::writeJSONMessage(const std::string& message)
-{
-	nlohmann::json json;
-
-	json["message"]   = message;
-
-	WriteJSON("Message", json);
 }
 
 void CMMDVMInfo::remoteControl(const std::string& command)
@@ -321,12 +245,19 @@ void CMMDVMInfo::remoteControl(const std::string& command)
 
 		for (const auto& it : m_configs) {
 			if (it.first == name) {
-				readConfig(it.first, it.second);
+				CReadConfig readConfig;
+				readConfig.read(it.first, it.second, m_exclusions);
 				return;
 			}
 		}
 
 		writeJSONMessage("Invalid config name");
+	} else if (command.substr(0, 9) == "Addresses") {
+		CReadAddresses readAddresses;
+		readAddresses.read();
+	} else if (command.substr(0, 8) == "Programs") {
+		CReadPrograms readPrograms;
+		readPrograms.read(m_programs);
 	} else {
 		writeJSONMessage("Invalid command");
 	}

@@ -55,6 +55,9 @@ public:
 	// The Configs section
 	std::vector<std::pair<std::string, std::string>> getConfigs() const;
 
+	// The Programs section
+	std::vector<std::string> getPrograms() const;
+
 private:
 	std::string  m_file;
 
@@ -74,6 +77,8 @@ private:
 	std::vector<std::string> m_exclusions;
 
 	std::vector<std::pair<std::string, std::string>> m_configs;
+
+	std::vector<std::string> m_programs;
 };
 
 #endif

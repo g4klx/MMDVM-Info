@@ -34,7 +34,8 @@ enum class SECTION {
 	LOG,
 	MQTT,
 	EXCLUDE,
-	CONFIGS
+	CONFIGS,
+	PROGRAMS
 };
 
 CConf::CConf(const std::string& file) :
@@ -50,7 +51,8 @@ m_mqttAuthEnabled(false),
 m_mqttUsername(),
 m_mqttPassword(),
 m_exclusions(),
-m_configs()
+m_configs(),
+m_programs()
 {
 }
 
@@ -84,6 +86,8 @@ bool CConf::read()
 				section = SECTION::EXCLUDE;
 			else if (::strncmp(buffer, "[Configs]", 9U) == 0)
 				section = SECTION::CONFIGS;
+			else if (::strncmp(buffer, "[Programs]", 10U) == 0)
+				section = SECTION::PROGRAMS;
 			else
 				section = SECTION::NONE;
 
@@ -134,6 +138,9 @@ bool CConf::read()
 		} else if (section == SECTION::CONFIGS) {
 			std::pair<std::string, std::string> data = std::make_pair(key, value);
 			m_configs.push_back(data);
+		} else if (section == SECTION::PROGRAMS) {
+			if (::strcmp(key, "Program") == 0)
+				m_programs.push_back(value);
 		}
 	}
 
@@ -201,4 +208,9 @@ std::vector<std::string> CConf::getExclusions() const
 std::vector<std::pair<std::string, std::string>> CConf::getConfigs() const
 {
 	return m_configs;
+}
+
+std::vector<std::string> CConf::getPrograms() const
+{
+	return m_programs;
 }
