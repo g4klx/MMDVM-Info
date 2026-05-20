@@ -139,6 +139,9 @@
     <ClInclude Include="Log.h" />
     <ClInclude Include="MMDVM-Info.h" />
     <ClInclude Include="MQTTConnection.h" />
+    <ClInclude Include="ReadAddresses.h" />
+    <ClInclude Include="ReadConfig.h" />
+    <ClInclude Include="ReadPrograms.h" />
     <ClInclude Include="Thread.h" />
     <ClInclude Include="Version.h" />
   </ItemGroup>
@@ -147,6 +150,9 @@
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="MMDVM-Info.cpp" />
     <ClCompile Include="MQTTConnection.cpp" />
+    <ClCompile Include="ReadAddresses.cpp" />
+    <ClCompile Include="ReadConfig.cpp" />
+    <ClCompile Include="ReadPrograms.cpp" />
     <ClCompile Include="Thread.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
