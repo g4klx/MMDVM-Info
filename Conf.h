@@ -56,6 +56,7 @@ public:
 	std::vector<std::pair<std::string, std::string>> getConfigs() const;
 
 	// The Programs section
+	unsigned int             getRefresh() const;
 	std::vector<std::string> getPrograms() const;
 
 private:
@@ -78,6 +79,7 @@ private:
 
 	std::vector<std::pair<std::string, std::string>> m_configs;
 
+	unsigned int             m_refresh;
 	std::vector<std::string> m_programs;
 };
 

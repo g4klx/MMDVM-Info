@@ -4,7 +4,7 @@ It provides three forms of information, firstly the contents of one of the named
 
 The second sort of data is about network interfaces that face the outside world, this means that information about loopback interfaces is ignored. Both the IPv4 and IPv6 address are listed for each interface if available.
 
-Finally, a list of MMDVM programs that are running on the system is returned. This list of programs is to be found in the MMDVM-Info ini file which restructs the information available. Any program can be added, and if it is running, its name appears along with with its PID.
+Finally, a list of MMDVM programs that are running on the system is returned. This list of programs is to be found in the MMDVM-Info ini file which restricts the information available. Any program can be added, and if it is running, its name appears along with with its PID. Unlike the other information, this is supplied periodically based on a configurable timer, by default every minute.
 
 It builds on 32-bit and 64-bit Linux as well as on Windows using Visual Studio 2022 on x86 and x64.
 

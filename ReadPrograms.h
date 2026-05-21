@@ -24,12 +24,13 @@
 
 class CReadPrograms {
 public:
-	CReadPrograms();
+	CReadPrograms(const std::vector<std::string>& programs);
 	~CReadPrograms();
 
-	bool read(const std::vector<std::string>& programs) const;
+	bool read() const;
 
 private:
+	std::vector<std::string> m_programs;
 };
 
 #endif

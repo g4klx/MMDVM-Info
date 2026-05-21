@@ -26,7 +26,8 @@
 #include <cstring>
 
 
-CReadPrograms::CReadPrograms()
+CReadPrograms::CReadPrograms(const std::vector<std::string>& programs) :
+m_programs(programs)
 {
 }
 
@@ -34,7 +35,7 @@ CReadPrograms::~CReadPrograms()
 {
 }
 
-bool CReadPrograms::read(const std::vector<std::string>& programs) const
+bool CReadPrograms::read() const
 {
 	nlohmann::json json;
 
@@ -53,7 +54,7 @@ bool CReadPrograms::read(const std::vector<std::string>& programs) const
 			FILE* fp = ::fopen(buffer, "rt");
 			if (fp != nullptr) {
 				if (::fgets(buffer, 512, fp) != nullptr) {
-					for (const auto& it : programs) {
+					for (const auto& it : m_programs) {
 						if (::strstr(buffer, it.c_str()) != nullptr) {
 							nlohmann::json pidJSON;
 							pidJSON["pid"] = lpid;

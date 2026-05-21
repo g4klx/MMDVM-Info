@@ -52,6 +52,7 @@ m_mqttUsername(),
 m_mqttPassword(),
 m_exclusions(),
 m_configs(),
+m_refresh(60U),
 m_programs()
 {
 }
@@ -139,7 +140,9 @@ bool CConf::read()
 			std::pair<std::string, std::string> data = std::make_pair(key, value);
 			m_configs.push_back(data);
 		} else if (section == SECTION::PROGRAMS) {
-			if (::strcmp(key, "Program") == 0)
+			if (::strcmp(key, "Refresh") == 0)
+				m_refresh = (unsigned int)::atoi(value);
+			else if (::strcmp(key, "Program") == 0)
 				m_programs.push_back(value);
 		}
 	}
@@ -208,6 +211,11 @@ std::vector<std::string> CConf::getExclusions() const
 std::vector<std::pair<std::string, std::string>> CConf::getConfigs() const
 {
 	return m_configs;
+}
+
+unsigned int CConf::getRefresh() const
+{
+	return m_refresh;
 }
 
 std::vector<std::string> CConf::getPrograms() const

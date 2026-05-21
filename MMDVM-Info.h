@@ -36,7 +36,6 @@ private:
 
 	std::vector<std::string>                         m_exclusions;
 	std::vector<std::pair<std::string, std::string>> m_configs;
-	std::vector<std::string>                         m_programs;
 
 	void remoteControl(const std::string& commandString);
 

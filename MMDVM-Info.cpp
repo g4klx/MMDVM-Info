@@ -24,6 +24,7 @@
 #include "ReadConfig.h"
 #include "Version.h"
 #include "Thread.h"
+#include "Timer.h"
 #include "Log.h"
 #include "GitVersion.h"
 
@@ -127,8 +128,7 @@ int main(int argc, char** argv)
 CMMDVMInfo::CMMDVMInfo(const std::string& fileName) :
 m_conf(fileName),
 m_exclusions(),
-m_configs(),
-m_programs()
+m_configs()
 {
 	assert(!fileName.empty());
 }
@@ -219,7 +219,15 @@ int CMMDVMInfo::run()
 
 	m_configs    = m_conf.getConfigs();
 	m_exclusions = m_conf.getExclusions();
-	m_programs   = m_conf.getPrograms();
+
+	unsigned int refresh              = m_conf.getRefresh();
+	std::vector<std::string> programs = m_conf.getPrograms();
+
+	CTimer refreshTimer(1000U, refresh);
+	refreshTimer.start();
+
+	CReadPrograms readPrograms(programs);
+	readPrograms.read();
 
 	LogMessage("MMDVM-Info-%s is starting", VERSION);
 	LogMessage("Built %s %s (GitID #%.7s)", __TIME__, __DATE__, gitversion);
@@ -228,6 +236,12 @@ int CMMDVMInfo::run()
 
 	while (!m_killed) {
 		CThread::sleep(100U);
+
+		refreshTimer.clock(100U);
+		if (refreshTimer.isRunning() && refreshTimer.hasExpired()) {
+			readPrograms.read();
+			refreshTimer.start();
+		}
 	}
 
 	LogMessage("MMDVM-Info is stopping");
@@ -255,9 +269,6 @@ void CMMDVMInfo::remoteControl(const std::string& command)
 	} else if (command.substr(0, 9) == "Addresses") {
 		CReadAddresses readAddresses;
 		readAddresses.read();
-	} else if (command.substr(0, 8) == "Programs") {
-		CReadPrograms readPrograms;
-		readPrograms.read(m_programs);
 	} else {
 		writeJSONMessage("Invalid command");
 	}
