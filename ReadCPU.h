@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2024,2026 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2026 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,9 +16,17 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#if !defined(VERSION_H)
-#define	VERSION_H
+#if !defined(ReadCPU_H)
+#define	ReadCPU_H
 
-const char* VERSION = "20260528";
+class CReadCPU {
+public:
+	CReadCPU();
+	~CReadCPU();
+
+	bool read() const;
+
+private:
+};
 
 #endif

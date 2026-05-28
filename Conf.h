@@ -56,8 +56,11 @@ public:
 	std::vector<std::pair<std::string, std::string>> getConfigs() const;
 
 	// The Programs section
-	unsigned int             getRefresh() const;
-	std::vector<std::string> getPrograms() const;
+	unsigned int             getProgramsRefresh() const;
+	std::vector<std::string> getProgramsNames() const;
+
+	// The CPU section
+	unsigned int             getCPURefresh() const;
 
 private:
 	std::string  m_file;
@@ -79,8 +82,10 @@ private:
 
 	std::vector<std::pair<std::string, std::string>> m_configs;
 
-	unsigned int             m_refresh;
-	std::vector<std::string> m_programs;
+	unsigned int             m_programsRefresh;
+	std::vector<std::string> m_programsNames;
+
+	unsigned int             m_cpuRefresh;
 };
 
 #endif
