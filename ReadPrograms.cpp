@@ -73,7 +73,7 @@ bool CReadPrograms::read() const
 
 		::closedir(dir);
 	}
-	
+
 	WriteJSON("Programs", json);
 
 	return true;

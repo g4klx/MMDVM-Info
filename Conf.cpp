@@ -35,7 +35,8 @@ enum class SECTION {
 	MQTT,
 	EXCLUDE,
 	CONFIGS,
-	PROGRAMS
+	PROGRAMS,
+	CPU
 };
 
 CConf::CConf(const std::string& file) :
@@ -52,8 +53,9 @@ m_mqttUsername(),
 m_mqttPassword(),
 m_exclusions(),
 m_configs(),
-m_refresh(60U),
-m_programs()
+m_programsRefresh(60U),
+m_programsNames(),
+m_cpuRefresh(60U)
 {
 }
 
@@ -89,6 +91,8 @@ bool CConf::read()
 				section = SECTION::CONFIGS;
 			else if (::strncmp(buffer, "[Programs]", 10U) == 0)
 				section = SECTION::PROGRAMS;
+			else if (::strncmp(buffer, "[CPU]", 5U) == 0)
+				section = SECTION::CPU;
 			else
 				section = SECTION::NONE;
 
@@ -141,9 +145,12 @@ bool CConf::read()
 			m_configs.push_back(data);
 		} else if (section == SECTION::PROGRAMS) {
 			if (::strcmp(key, "Refresh") == 0)
-				m_refresh = (unsigned int)::atoi(value);
+				m_programsRefresh = (unsigned int)::atoi(value);
 			else if (::strcmp(key, "Program") == 0)
-				m_programs.push_back(value);
+				m_programsNames.push_back(value);
+		} else if (section == SECTION::CPU) {
+			if (::strcmp(key, "Refresh") == 0)
+				m_cpuRefresh = (unsigned int)::atoi(value);
 		}
 	}
 
@@ -213,12 +220,17 @@ std::vector<std::pair<std::string, std::string>> CConf::getConfigs() const
 	return m_configs;
 }
 
-unsigned int CConf::getRefresh() const
+unsigned int CConf::getProgramsRefresh() const
 {
-	return m_refresh;
+	return m_programsRefresh;
 }
 
-std::vector<std::string> CConf::getPrograms() const
+std::vector<std::string> CConf::getProgramsNames() const
 {
-	return m_programs;
+	return m_programsNames;
+}
+
+unsigned int CConf::getCPURefresh() const
+{
+	return m_cpuRefresh;
 }

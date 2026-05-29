@@ -22,6 +22,7 @@
 #include "ReadAddresses.h"
 #include "ReadPrograms.h"
 #include "ReadConfig.h"
+#include "ReadCPU.h"
 #include "Version.h"
 #include "Thread.h"
 #include "Timer.h"
@@ -220,14 +221,24 @@ int CMMDVMInfo::run()
 	m_configs    = m_conf.getConfigs();
 	m_exclusions = m_conf.getExclusions();
 
-	unsigned int refresh              = m_conf.getRefresh();
-	std::vector<std::string> programs = m_conf.getPrograms();
+	unsigned int programsRefresh           = m_conf.getProgramsRefresh();
+	std::vector<std::string> programsNames = m_conf.getProgramsNames();
 
-	CTimer refreshTimer(1000U, refresh);
-	refreshTimer.start();
+	unsigned int cpuRefresh = m_conf.getCPURefresh();
 
-	CReadPrograms readPrograms(programs);
-	readPrograms.read();
+	CTimer programsRefreshTimer(1000U, programsRefresh);
+	programsRefreshTimer.start();
+
+	CTimer cpuRefreshTimer(1000U, cpuRefresh);
+	cpuRefreshTimer.start();
+
+	CReadPrograms readPrograms(programsNames);
+	if (programsRefresh > 0U)
+		readPrograms.read();
+
+	CReadCPU readCPU;
+	if (cpuRefresh > 0U)
+		readCPU.read();
 
 	LogMessage("MMDVM-Info-%s is starting", VERSION);
 	LogMessage("Built %s %s (GitID #%.7s)", __TIME__, __DATE__, gitversion);
@@ -237,10 +248,16 @@ int CMMDVMInfo::run()
 	while (!m_killed) {
 		CThread::sleep(100U);
 
-		refreshTimer.clock(100U);
-		if (refreshTimer.isRunning() && refreshTimer.hasExpired()) {
+		programsRefreshTimer.clock(100U);
+		if (programsRefreshTimer.isRunning() && programsRefreshTimer.hasExpired()) {
 			readPrograms.read();
-			refreshTimer.start();
+			programsRefreshTimer.start();
+		}
+
+		cpuRefreshTimer.clock(100U);
+		if (cpuRefreshTimer.isRunning() && cpuRefreshTimer.hasExpired()) {
+			readCPU.read();
+			cpuRefreshTimer.start();
 		}
 	}
 
