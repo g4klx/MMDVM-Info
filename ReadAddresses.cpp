@@ -72,7 +72,7 @@ bool CReadAddresses::read() const
 							const char* ret = ::inet_ntop(AF_INET, &in4->sin_addr, address, ADDR_LEN);
 							if (ret != nullptr) {
 								addrData ipv4;
-								ipv4.type    = "IPv4";
+								ipv4.type    = "ipv4";
 								ipv4.address = address;
 
 								auto it = ifData.find(ifName);
@@ -92,7 +92,7 @@ bool CReadAddresses::read() const
 							const char* ret = ::inet_ntop(AF_INET6, &in6->sin6_addr, address, ADDR_LEN);
 							if (ret != nullptr) {
 								addrData ipv6;
-								ipv6.type    = "IPv6";
+								ipv6.type    = "ipv6";
 								ipv6.address = address;
 
 								auto it = ifData.find(ifName);
@@ -125,10 +125,9 @@ bool CReadAddresses::read() const
 		for (const auto& it2 : it1.second)
 			ipJSON[it2.type] = it2.address;
 
-		nlohmann::json ifJSON;
-		ifJSON[it1.first] = ipJSON;
+		ipJSON["name"] = it1.first;
 
-		json.push_back(ifJSON);
+		json.push_back(ipJSON);
 	}
 
 	WriteJSON("Addresses", json);

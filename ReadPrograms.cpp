@@ -57,12 +57,10 @@ bool CReadPrograms::read() const
 					for (const auto& it : m_programs) {
 						if (::strstr(buffer, it.c_str()) != nullptr) {
 							nlohmann::json pidJSON;
-							pidJSON["pid"] = lpid;
+							pidJSON["name"] = it;
+							pidJSON["pid"]  = lpid;
 
-							nlohmann::json procJSON;
-							procJSON[it] = pidJSON;
-
-							json.push_back(procJSON);
+							json.push_back(pidJSON);
 						}
 					}
 				}
