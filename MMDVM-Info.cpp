@@ -70,18 +70,20 @@ static CMMDVMInfo* info = nullptr;
 
 int main(int argc, char** argv)
 {
-	std::string iniFile = DEFAULT_INI_FILE;
-
-	if ((argc == 2) && ((::strcmp(argv[1U], "-v") == 0) || (::strcmp(argv[1U], "--version") == 0))) {
-		::fprintf(stdout, "MMDVM-Info version %s git #%.7s\n", VERSION, gitversion);
-		return 0;
-	}
-
-	if (argc == 2) {
-		iniFile  = std::string(argv[1U]);
-	} else {
-		::fprintf(stderr, "Usage: MMDVM-Info [-v|--version] [filename]\n");
-		return 1;
+	const char* iniFile = DEFAULT_INI_FILE;
+	if (argc > 1) {
+		for (int currentArg = 1; currentArg < argc; ++currentArg) {
+			std::string arg = argv[currentArg];
+			if ((arg == "-v") || (arg == "--version")) {
+				::fprintf(stdout, "MMDVM-Info version %s git #%.7s\n", VERSION, gitversion);
+				return 0;
+			} else if (arg.substr(0, 1) == "-") {
+				::fprintf(stderr, "Usage: MMDVM-Info [-v|--version] [filename]\n");
+				return 1;
+			} else {
+				iniFile = argv[currentArg];
+			}
+		}
 	}
 
 #if !defined(_WIN32) && !defined(_WIN64)
@@ -96,7 +98,7 @@ int main(int argc, char** argv)
 	do {
 		m_signal = 0;
 
-		info = new CMMDVMInfo(iniFile);
+		info = new CMMDVMInfo(std::string(iniFile));
 		ret = info->run();
 
 		delete info;
